@@ -48,3 +48,6 @@ export default tseslint.config({
   },
 })
 ```
+
+# Setup configuration
+Fake Backend Server Run Commend: ``` json-server --watch db.json --port 5000 ```
