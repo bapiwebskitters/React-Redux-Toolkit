@@ -1,7 +1,14 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState, AppDispatch } from "../redux/store";
+import {
+  submitContactForm,
+  clearMessages,
+} from "../redux/features/contact/contactSlice";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import { contactValidationSchema } from "../Validation/validationSchema";
 
 const ContactSection: React.FC = () => {
-
   const settings = {
     email: "admin@example.com",
     phone: "+919093595084",
@@ -9,49 +16,30 @@ const ContactSection: React.FC = () => {
     map_url:
       "https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d48389.78314118045!2d-74.006138!3d40.710059!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c25a22a3bda30d%3A0xb89d1fe6bc499443!2sDowntown%20Conference%20Center!5e0!3m2!1sen!2sus!4v1676961268712!5m2!1sen!2sus",
   };
-  const [formData, setFormData] = useState({
+
+  const dispatch: AppDispatch = useDispatch();
+  const { isLoading, successMessage, errorMessage } = useSelector(
+    (state: RootState) => state.contact
+  );
+
+  useEffect(() => {
+    if (successMessage || errorMessage) {
+      const timer = setTimeout(() => {
+        dispatch(clearMessages());
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [successMessage, errorMessage, dispatch]);
+
+  const initialValues = {
     name: "",
     email: "",
     subject: "",
     message: "",
-  });
-  const [isLoading, setIsLoading] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    try {
-      // Replace with your actual form submission logic
-      const response = await fetch("/api/contact", {
-        // Update this URL as needed
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      if (response.ok) {
-        setSuccessMessage("Your message has been sent. Thank you!");
-        setFormData({ name: "", email: "", subject: "", message: "" });
-      } else {
-        setErrorMessage("Something went wrong. Please try again.");
-      }
-    } catch {
-      setErrorMessage("Something went wrong. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
+  const handleSubmit = (values: typeof initialValues) => {
+    dispatch(submitContactForm(values));
   };
 
   return (
@@ -113,86 +101,118 @@ const ContactSection: React.FC = () => {
             </div>
           </div>
           <div className="col-lg-7">
-            <form
+            <Formik
+              initialValues={initialValues}
+              validationSchema={contactValidationSchema}
               onSubmit={handleSubmit}
-              className="php-email-form"
-              data-aos="fade-up"
-              data-aos-delay="200"
             >
-              <div className="row gy-4">
-                <div className="col-md-6">
-                  <label htmlFor="name-field" className="pb-2">
-                    Your Name
-                  </label>
-                  <input
-                    type="text"
-                    name="name"
-                    id="name-field"
-                    className="form-control"
-                    value={formData.name}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
+              {({ isSubmitting }) => (
+                <Form
+                  className="php-email-form"
+                  data-aos="fade-up"
+                  data-aos-delay="200"
+                >
+                  <div className="row gy-4">
+                    <div className="col-md-6">
+                      <label htmlFor="name-field" className="pb-2">
+                        Your Name
+                      </label>
+                      <Field
+                        type="text"
+                        name="name"
+                        id="name-field"
+                        className="form-control"
+                      />
+                      <ErrorMessage
+                        name="name"
+                        component="span"
+                        className="error"
+                      />
+                    </div>
 
-                <div className="col-md-6">
-                  <label htmlFor="email-field" className="pb-2">
-                    Your Email
-                  </label>
-                  <input
-                    type="email"
-                    className="form-control"
-                    name="email"
-                    id="email-field"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
+                    <div className="col-md-6">
+                      <label htmlFor="email-field" className="pb-2">
+                        Your Email
+                      </label>
+                      <Field
+                        type="email"
+                        name="email"
+                        id="email-field"
+                        className="form-control"
+                      />
+                      <ErrorMessage
+                        name="email"
+                        component="span"
+                        className="error"
+                      />
+                    </div>
 
-                <div className="col-md-12">
-                  <label htmlFor="subject-field" className="pb-2">
-                    Subject
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    name="subject"
-                    id="subject-field"
-                    value={formData.subject}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
+                    <div className="col-md-12">
+                      <label htmlFor="subject-field" className="pb-2">
+                        Subject
+                      </label>
+                      <Field
+                        type="text"
+                        name="subject"
+                        id="subject-field"
+                        className="form-control"
+                      />
+                      <ErrorMessage
+                        name="subject"
+                        component="span"
+                        className="error"
+                      />
+                    </div>
 
-                <div className="col-md-12">
-                  <label htmlFor="message-field" className="pb-2">
-                    Message
-                  </label>
-                  <textarea
-                    className="form-control"
-                    name="message"
-                    rows={10}
-                    id="message-field"
-                    value={formData.message}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
+                    <div className="col-md-12">
+                      <label htmlFor="message-field" className="pb-2">
+                        Message
+                      </label>
+                      <Field
+                        as="textarea"
+                        name="message"
+                        rows={10}
+                        id="message-field"
+                        className="form-control"
+                      />
+                      <ErrorMessage
+                        name="message"
+                        component="span"
+                        className="error"
+                      />
+                    </div>
 
-                <div className="col-md-12 text-center">
-                  {isLoading && <div className="loading">Loading</div>}
-                  {errorMessage && (
-                    <div className="error-message">{errorMessage}</div>
-                  )}
-                  {successMessage && (
-                    <div className="sent-message">{successMessage}</div>
-                  )}
-
-                  <button type="submit">Send Message</button>
-                </div>
-              </div>
-            </form>
+                    <div className="col-md-12 text-center">
+                      {isLoading && <div className="loading">Loading</div>}
+                      {errorMessage && (
+                        <div className="error">{errorMessage}</div>
+                      )}
+                      {successMessage && (
+                        <div className="sent-message">{successMessage}</div>
+                      )}
+                      <button
+                        type="submit"
+                        disabled={isSubmitting || isLoading}
+                      >
+                        {isSubmitting || isLoading ? (
+                          <>
+                            <span
+                              className="spinner-border spinner-border-sm"
+                              role="status"
+                              aria-hidden="true"
+                            ></span>{" "}
+                            Submitting...
+                            {/* <span className="dot-flashing"></span> */}
+                          </>
+                        ) : (
+                          "Send Message"
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                </Form>
+              )}
+            </Formik>
           </div>
         </div>
       </div>

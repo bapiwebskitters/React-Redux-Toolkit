@@ -15,6 +15,7 @@
     "aos": "^2.3.4",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
+    "formik": "^2.4.6",
     "glightbox": "^3.3.0",
     "imagesloaded": "^5.0.0",
     "isotope-layout": "^3.0.6",
@@ -24,7 +25,8 @@
     "react-router-dom": "^6.26.0",
     "sass": "^1.77.8",
     "swiper": "^11.1.9",
-    "waypoints": "^4.0.1"
+    "waypoints": "^4.0.1",
+    "yup": "^1.4.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.8.0",
