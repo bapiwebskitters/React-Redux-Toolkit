@@ -4,6 +4,7 @@ import blogReducer from "./features/blog/blogSlice";
 import faqReducer from "./features/faq/faqSlice";
 import skillSlice from "./features/skill/skillSlice";
 import contactReducer from "./features/contact/contactSlice";
+import authReducer from "./features/auth/authSlice";
 
 const store = configureStore({
   reducer: {
@@ -11,6 +12,7 @@ const store = configureStore({
     faq: faqReducer,
     skill: skillSlice,
     contact: contactReducer,
+    auth: authReducer,
   },
 });
 

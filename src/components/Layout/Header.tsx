@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  selectAuthLoading,
+  selectUser,
+} from "../../redux/features/auth/authSelectors";
+import { logout } from "../../redux/features/auth/authSlice";
+import { AppDispatch } from "../../redux/store";
 
 const Header: React.FC = () => {
   const [isActive, setIsActive] = useState(false);
@@ -69,6 +76,15 @@ const Header: React.FC = () => {
     };
   }, []);
 
+  const dispatch: AppDispatch = useDispatch();
+  const user = useSelector(selectUser);
+  const isLoading = useSelector(selectAuthLoading);
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate("/login");
+  };
+
   return (
     <header id="header" className="header d-flex align-items-center fixed-top">
       <div className="container-fluid container-xl position-relative d-flex align-items-center">
@@ -134,15 +150,34 @@ const Header: React.FC = () => {
             <li>
               <a href="#contact">Contact</a>
             </li>
+            {user ? (
+              <li className="auth-dropdown">
+                <img src={user.avatar || "default-avatar.png"} alt="User Avatar" className="user-avatar"/>
+                <ul>
+                  <li>
+                    <Link to="/profile">My Profile</Link>
+                  </li>
+                  <li>
+                    <Link to="/settings">Settings</Link>
+                  </li>
+                  <li>
+                    <button onClick={handleLogout} disabled={isLoading}>
+                      {isLoading ? "Logging out..." : "Logout"}
+                    </button>
+                  </li>
+                </ul>
+              </li>
+            ) : (
+              <Link className="btn-getstarted" to="/login">
+                Login
+              </Link>
+            )}
           </ul>
           <i
             className={`mobile-nav-toggle bi ${isActive ? "bi-x" : "bi-list"}`}
             onClick={toggleMobileNav}
           ></i>
         </nav>
-        <a className="btn-getstarted" href="#about">
-          Get Started
-        </a>
       </div>
     </header>
   );

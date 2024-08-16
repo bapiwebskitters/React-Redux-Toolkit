@@ -1,10 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-
-interface ContactFormState {
-  isLoading: boolean;
-  successMessage: string | null;
-  errorMessage: string | null;
-}
+import { ContactForm, ContactFormState } from "../../../types/ContactUs";
 
 const initialState: ContactFormState = {
   isLoading: false,
@@ -12,18 +7,10 @@ const initialState: ContactFormState = {
   errorMessage: null,
 };
 
-interface ContactForm {
-  name: string;
-  email: string;
-  subject: string;
-  message: string;
-}
-
 // Async thunk to handle form submission
 export const submitContactForm = createAsyncThunk(
   "contact/submitForm",
   async (formData: ContactForm) => {
-    console.log(formData, "contact");
     const response = await fetch("http://localhost:5000/contacts", {
       method: "POST",
       headers: { "Content-Type": "application/json" },

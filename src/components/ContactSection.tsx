@@ -7,6 +7,7 @@ import {
 } from "../redux/features/contact/contactSlice";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { contactValidationSchema } from "../Validation/validationSchema";
+import { toast } from "react-toastify";
 
 const ContactSection: React.FC = () => {
   const settings = {
@@ -23,12 +24,18 @@ const ContactSection: React.FC = () => {
   );
 
   useEffect(() => {
-    if (successMessage || errorMessage) {
-      const timer = setTimeout(() => {
-        dispatch(clearMessages());
-      }, 5000);
-      return () => clearTimeout(timer);
+    if (successMessage) {
+      toast.success(successMessage);
     }
+    if (errorMessage) {
+      toast.error(errorMessage);
+    }
+
+    const timer = setTimeout(() => {
+      dispatch(clearMessages());
+    }, 5000);
+
+    return () => clearTimeout(timer);
   }, [successMessage, errorMessage, dispatch]);
 
   const initialValues = {
@@ -106,7 +113,7 @@ const ContactSection: React.FC = () => {
               validationSchema={contactValidationSchema}
               onSubmit={handleSubmit}
             >
-              {({ isSubmitting }) => (
+              {() => (
                 <Form
                   className="php-email-form"
                   data-aos="fade-up"
@@ -183,18 +190,11 @@ const ContactSection: React.FC = () => {
                     </div>
 
                     <div className="col-md-12 text-center">
-                      {isLoading && <div className="loading">Loading</div>}
-                      {errorMessage && (
-                        <div className="error">{errorMessage}</div>
-                      )}
-                      {successMessage && (
-                        <div className="sent-message">{successMessage}</div>
-                      )}
                       <button
                         type="submit"
-                        disabled={isSubmitting || isLoading}
+                        disabled={isLoading}
                       >
-                        {isSubmitting || isLoading ? (
+                        { isLoading ? (
                           <>
                             <span
                               className="spinner-border spinner-border-sm"

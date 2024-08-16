@@ -8,11 +8,7 @@ import {
   fetchPostsSuccess,
   fetchPostsFailure,
 } from "../../redux/features/blog/blogSlice";
-import {
-  selectBlogPosts,
-  selectBlogStatus,
-  selectBlogError,
-} from "../../redux/features/blog/blogSelectors";
+// import { selectBlogPosts, selectBlogStatus, selectBlogError} from "../../redux/features/blog/blogSelectors";
 
 const List: React.FC = () => {
   // 1st way to dynamically add or remove body class name 
@@ -86,7 +82,7 @@ const List: React.FC = () => {
                 {posts.map((post) => (
                   <li key={post.id}>
                     <h2>{post.title}</h2>
-                    <p>{post.content}</p>
+                    <p>{post.body}</p>
                     <Link to={`/blog/${post.id}`}>View Details</Link>
                   </li>
                 ))}
